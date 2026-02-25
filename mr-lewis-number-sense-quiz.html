@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mr Lewis's Number  Sense Quiz</title>
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f4f8ff;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  font-size: 6vw;
+  margin-top: 20px;
+}
+
+#menu p {
+  font-size: 3vw;
+}
+
+button {
+  font-size: 3vw;
+  padding: 20px 40px;
+  margin: 15px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.level-btn { width: 40%; }
+
+.hot { background-color: #4CAF50; color: white; }
+.spicy { background-color: #ff9800; color: white; }
+.flaming { background-color: #e53935; color: white; }
+
+.answer-btn {
+  background-color: white;
+  border: 4px solid #333;
+  width: 30%;
+  margin: 20px;
+}
+
+.correct { background-color: #4CAF50 !important; color: white; }
+.wrong { background-color: #e53935 !important; color: white; }
+
+#question {
+  font-size: 12vw;
+  margin: 80px 0;
+}
+
+#timer {
+  font-size: 3vw;
+  margin-top: 20px;
+}
+
+#answers {
+  margin-top: 40px;
+}
+
+</style>
+</head>
+<body>
+
+<h1>Mr Lewis's Number  Sense Quiz</h1>
+
+<div id="menu">
+  <p>Select a level:</p>
+  <button class="level-btn hot" onclick="startGame('hot')">HOT</button><br>
+  <button class="level-btn spicy" onclick="startGame('spicy')">SPICY</button><br>
+  <button class="level-btn flaming" onclick="startGame('flaming')">FLAMING HOT</button>
+</div>
+
+<div id="game" style="display:none;">
+  <div id="timer"></div>
+  <div id="question"></div>
+  <div id="answers"></div>
+</div>
+
+<script>
+let level;
+let currentAnswer;
+let questionCount = 0;
+let totalQuestions = 10;
+let startTime;
+
+function startGame(selectedLevel) {
+  level = selectedLevel;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game").style.display = "block";
+  
+  if (level === "flaming") {
+    totalQuestions = 20;
+    startTime = new Date();
+    document.getElementById("timer").innerHTML = "Timer started!";
+  } else {
+    totalQuestions = 10;
+    document.getElementById("timer").innerHTML = "";
+  }
+
+  questionCount = 0;
+  nextQuestion();
+}
+
+function nextQuestion() {
+  if (questionCount >= totalQuestions) {
+    endGame();
+    return;
+  }
+
+  questionCount++;
+
+  let num1, num2, questionText;
+
+  if (level === "hot") {
+    num1 = Math.floor(Math.random() * 11);
+    num2 = Math.floor(Math.random() * 11);
+    questionText = num1 + " + " + num2;
+    currentAnswer = num1 + num2;
+  }
+
+  if (level === "spicy") {
+    if (Math.random() < 0.5) {
+      num1 = Math.floor(Math.random() * 11);
+      num2 = Math.floor(Math.random() * 11);
+      questionText = num1 + " + " + num2;
+      currentAnswer = num1 + num2;
+    } else {
+      num1 = Math.floor(Math.random() * 21);
+      num2 = Math.floor(Math.random() * (num1 + 1));
+      questionText = num1 + " - " + num2;
+      currentAnswer = num1 - num2;
+    }
+  }
+
+  if (level === "flaming") {
+    if (Math.random() < 0.5) {
+      num1 = Math.floor(Math.random() * 11);
+      num2 = Math.floor(Math.random() * 11);
+      questionText = num1 + " + " + num2;
+      currentAnswer = num1 + num2;
+    } else {
+      num1 = Math.floor(Math.random() * 21);
+      num2 = Math.floor(Math.random() * (num1 + 1));
+      questionText = num1 + " - " + num2;
+      currentAnswer = num1 - num2;
+    }
+  }
+
+  document.getElementById("question").innerHTML = questionText;
+  generateAnswers();
+}
+
+function generateAnswers() {
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  let answers = [currentAnswer];
+
+  while (answers.length < 4) {
+    let wrong = currentAnswer + Math.floor(Math.random() * 5) - 2;
+    if (!answers.includes(wrong) && wrong >= 0) {
+      answers.push(wrong);
+    }
+  }
+
+  answers.sort(() => Math.random() - 0.5);
+
+  answers.forEach(answer => {
+    let btn = document.createElement("button");
+    btn.innerHTML = answer;
+    btn.classList.add("answer-btn");
+    btn.onclick = function() { checkAnswer(answer, btn); };
+    answersDiv.appendChild(btn);
+  });
+}
+
+function checkAnswer(answer, button) {
+  if (answer === currentAnswer) {
+    button.classList.add("correct");
+  } else {
+    button.classList.add("wrong");
+  }
+
+  setTimeout(nextQuestion, 700);
+}
+
+function endGame() {
+  if (level === "flaming") {
+    let endTime = new Date();
+    let seconds = Math.floor((endTime - startTime) / 1000);
+    document.getElementById("question").innerHTML = 
+      "Finished! Time: " + seconds + " seconds";
+  } else {
+    document.getElementById("question").innerHTML = 
+      "Great work!";
+  }
+
+  document.getElementById("answers").innerHTML = 
+    "<button onclick='location.reload()'>Play Again</button>";
+}
+</script>
+
+</body>
+</html>
